@@ -1,4 +1,4 @@
-package co.loyyee;
+package co.loyyee.playwright;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -125,7 +125,7 @@ public class PlaywrightDemo {
 
   @Test()
   void standardUserLogin() {
-    String  u = users.get("standard_user");
+    String u = users.get("standard_user");
 
     page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Username")).fill(u);
     page.getByRole(AriaRole.TEXTBOX, new Page.GetByRoleOptions().setName("Password")).fill(password);
@@ -144,11 +144,12 @@ public class PlaywrightDemo {
     page.getByPlaceholder("Password").fill(password);
 
     page.locator("input#login-button").click();
-    var red = "#e2231a";
 
     var errCont = page.locator("h3[data-test='error']");
     String errMsg = errCont.textContent();
+    assertEquals("Epic sadface: Sorry, this user has been locked out.", errMsg);
 
+    var red = "#e2231a";
     String bg = (String) errCont.evaluate("""
         () => {
          const ct = document.querySelector('div.error-message-container.error');
@@ -157,9 +158,7 @@ public class PlaywrightDemo {
         """);
     String actual = Color.fromString(bg).asHex();
 
-    assertEquals("Epic sadface: Sorry, this user has been locked out.", errMsg);
     assertEquals(red, actual);
-
 
     page.locator("button[data-test='error-button']").click();
 
